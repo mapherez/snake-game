@@ -164,20 +164,28 @@
         let handleKeyDown = evt => {
             switch (evt.keyCode) {
                 case 37:
-                    velocityX = -1;
-                    velocityY = 0;
+                    if (velocityX !== 1) {
+                        velocityX = -1;
+                        velocityY = 0;
+                    }
                     break;
                 case 38:
-                    velocityX = 0;
-                    velocityY = -1;
+                    if (velocityY !== 1) {
+                        velocityX = 0;
+                        velocityY = -1;
+                    }
                     break;
                 case 39:
-                    velocityX = 1;
-                    velocityY = 0;
+                    if (velocityX !== -1) {
+                        velocityX = 1;
+                        velocityY = 0;
+                    }
                     break;
                 case 40:
-                    velocityX = 0;
-                    velocityY = 1;
+                    if (velocityY !== -1) {
+                        velocityX = 0;
+                        velocityY = 1;
+                    }
                     break;
             }
         }
@@ -185,20 +193,28 @@
         let move = value => {
             switch (value) {
                 case 'left':
-                    velocityX = -1;
-                    velocityY = 0;
+                    if (velocityX !== 1) {
+                        velocityX = -1;
+                        velocityY = 0;
+                    }
                     break;
                 case 'up':
-                    velocityX = 0;
-                    velocityY = -1;
+                    if (velocityY !== 1) {
+                        velocityX = 0;
+                        velocityY = -1;
+                    }
                     break;
                 case 'right':
-                    velocityX = 1;
-                    velocityY = 0;
+                    if (velocityX !== -1) {
+                        velocityX = 1;
+                        velocityY = 0;
+                    }
                     break;
                 case 'down':
-                    velocityX = 0;
-                    velocityY = 1;
+                    if (velocityY !== -1) {
+                        velocityX = 0;
+                        velocityY = 1;
+                    }
                     break;
             }
         }
