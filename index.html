@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Snake Game</title>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #282828;
+            height: 100%;
+            width: 100%;
+        }
+
+        canvas {
+            margin: 0;
+            padding: 0;
+            /*width: 100vw;
+            height: 50vh;*/
+        }
+
+        .controller {
+            width: 100vw;
+            height: 50vh;
+            display: grid;
+            grid-template-columns: auto 80px auto;
+            grid-template-rows: auto 80px auto;
+        }
+
+        button {
+            border: none;
+            background: cadetblue;
+            color: white;
+            margin: 0;
+
+            width: 80px;
+            height: 80px;
+        }
+
+        .up {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 1;
+            grid-row-end: 2;
+
+            justify-self: center;
+            align-self: end;
+        }
+
+        .left {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 2;
+            grid-row-end: 3;
+
+            justify-self: end;
+            align-self: center;
+        }
+
+        .right {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 2;
+            grid-row-end: 3;
+
+            justify-self: start;
+            align-self: center;
+        }
+
+        .down {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 3;
+            grid-row-end: 4;
+
+            justify-self: center;
+            align-self: start;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="game"></canvas>
+    <div class="controller">
+        <button class="up" onclick="move('up')">UP</button>
+        <button class="left" onclick="move('left')">LEFT</button>
+        <button class="right" onclick="move('right')">RIGHT</button>
+        <button class="down" onclick="move('down')">DOWN</button>
+    </div>
+
+    <script>
+        let canvas = document.getElementById("game");
+        //canvas.width = window.innerWidth - 5;
+        // canvas.height = window.innerHeight - 5;
+        canvas.width = window.innerWidth;
+        canvas.height = (window.innerHeight / 2) - 5;
+
+        let SQUARE_SIZE = Math.floor(canvas.width / 20);
+        let SQUARES_PER_SIDE_X = Math.floor(canvas.width / SQUARE_SIZE);
+        let SQUARES_PER_SIDE_Y = Math.floor(canvas.height / SQUARE_SIZE);
+        // let BOARD_SIZE = SQUARE_SIZE * SQUARES_PER_SIDE
+        let PADDING_SIZE = 2
+        let FPS = 15;
+
+        window.onload = () => {
+            window.addEventListener("keydown", handleKeyDown);
+            setInterval(tick, 1000 / FPS);
+        }
+
+        // window.onresize = () => {
+        //     canvas.width = window.innerWidth - 5;
+        //     canvas.height = window.innerHeight - 5;
+        //     SQUARE_SIZE = Math.floor(canvas.width / 20);
+        //     SQUARES_PER_SIDE_X = Math.floor(canvas.width / SQUARE_SIZE);
+        //     SQUARES_PER_SIDE_Y = Math.floor(canvas.height / SQUARE_SIZE);
+        // }
+
+        let ctx = document.getElementById("game").getContext("2d");
+
+        let appleX = 0, appleY = 0, headX = 10, headY = 10, velocityX = 0, velocityY = 0, snakeSize = 5;
+        let trail = [];
+
+        let drawSquare = (x, y) => ctx.fillRect(x * SQUARE_SIZE, y * SQUARE_SIZE, SQUARE_SIZE - PADDING_SIZE, SQUARE_SIZE - PADDING_SIZE);
+
+        let tick = () => {
+            headX = (headX + velocityX + SQUARES_PER_SIDE_X) % SQUARES_PER_SIDE_X;
+            headY = (headY + velocityY + SQUARES_PER_SIDE_Y) % SQUARES_PER_SIDE_Y;
+
+            ctx.fillStyle = "black";
+            // ctx.fillRect(0, 0, BOARD_SIZE, BOARD_SIZE);
+            // ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(0, 0, SQUARE_SIZE * SQUARES_PER_SIDE_X, SQUARE_SIZE * SQUARES_PER_SIDE_Y);
+
+            ctx.fillStyle = "lime";
+            for (let { x, y } of trail) {
+                drawSquare(x, y);
+                if (x === headX && y === headY) {
+                    if (snakeSize > 5) {
+                        alert("GAME OVER");
+                        snakeSize = 5;
+                    }
+                }
+            }
+
+            ctx.fillStyle = "red";
+            drawSquare(appleX, appleY);
+            if (appleX === headX && appleY === headY) {
+                snakeSize++;
+                appleX = Math.floor(Math.random() * SQUARES_PER_SIDE_X);
+                appleY = Math.floor(Math.random() * SQUARES_PER_SIDE_Y);
+            }
+
+            trail.push({ x: headX, y: headY });
+            while (trail.length > snakeSize) {
+                trail.shift();
+            }
+        }
+
+        let handleKeyDown = evt => {
+            switch (evt.keyCode) {
+                case 37:
+                    velocityX = -1;
+                    velocityY = 0;
+                    break;
+                case 38:
+                    velocityX = 0;
+                    velocityY = -1;
+                    break;
+                case 39:
+                    velocityX = 1;
+                    velocityY = 0;
+                    break;
+                case 40:
+                    velocityX = 0;
+                    velocityY = 1;
+                    break;
+            }
+        }
+
+        let move = value => {
+            switch (value) {
+                case 'left':
+                    velocityX = -1;
+                    velocityY = 0;
+                    break;
+                case 'up':
+                    velocityX = 0;
+                    velocityY = -1;
+                    break;
+                case 'right':
+                    velocityX = 1;
+                    velocityY = 0;
+                    break;
+                case 'down':
+                    velocityX = 0;
+                    velocityY = 1;
+                    break;
+            }
+        }
+    </script>
+</body>
+
+</html>
